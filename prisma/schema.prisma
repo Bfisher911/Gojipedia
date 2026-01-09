@@ -1,0 +1,382 @@
+// Gojipedia Prisma Schema
+// Supports SQLite for development and PostgreSQL for production
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// MONSTER ENTITIES
+// ============================================================================
+
+model Monster {
+  id                    String   @id @default(cuid())
+  name                  String   @unique
+  slug                  String   @unique
+  aliases               String   @default("[]") // JSON array of aliases
+  eraTags               String   @default("[]") // JSON array: Showa, Heisei, Millennium, Reiwa, Legendary, Other
+  alignment             String   @default("neutral") // protagonist, antagonist, neutral, evolves
+  speciesType           String   @default("kaiju") // kaiju, mech, alien, human_organization, titan
+
+  // First appearance
+  firstAppearanceDate   DateTime?
+  firstAppearanceWorkId String?
+  firstAppearanceWork   Work?    @relation("FirstAppearance", fields: [firstAppearanceWorkId], references: [id])
+
+  // Physical stats
+  heightMeters          Float?
+  weightTons            Float?
+
+  // Lore content
+  originSummary         String?  @default("")
+  lastKnownWhereabouts  String?  @default("")
+  descriptionLong       String?  @default("")
+  abilities             String   @default("[]") // JSON array
+  attacks               String   @default("[]") // JSON array of signature attacks
+  weaknesses            String   @default("[]") // JSON array
+
+  // Fan Power Index components (1-100 scale each)
+  fanPowerIndex         Int      @default(50)
+  durabilityScore       Int      @default(50)
+  attackPowerScore      Int      @default(50)
+  mobilityScore         Int      @default(50)
+  intelligenceScore     Int      @default(50)
+  specialAbilitiesScore Int      @default(50)
+  eraScalingFactor      Float    @default(1.0)
+
+  // Images
+  primaryImageUrl       String?
+  galleryImages         String   @default("[]") // JSON array of image URLs
+
+  // Metadata
+  isActive              Boolean  @default(true)
+  isFeatured            Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  // Relations
+  appearances           Appearance[]
+  battleParticipations  BattleParticipant[]
+  relationshipsFrom     Relationship[]       @relation("RelationshipFrom")
+  relationshipsTo       Relationship[]       @relation("RelationshipTo")
+  productCollections    ProductCollection[]  @relation("MonsterCollections")
+
+  @@index([slug])
+  @@index([alignment])
+  @@index([speciesType])
+  @@index([fanPowerIndex])
+}
+
+// ============================================================================
+// WORK ENTITIES (Movies, Series, Comics, Games)
+// ============================================================================
+
+model Work {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  workType       String   // movie, series, comic, game
+  releaseDate    DateTime?
+  eraTags        String   @default("[]") // JSON array
+  continuityTag  String?  // For timeline grouping
+
+  // Content
+  synopsisLong   String?  @default("")
+  studio         String?
+  director       String?
+  runtimeMinutes Int?
+
+  // Images
+  posterImageUrl String?
+
+  // Metadata
+  isActive       Boolean  @default(true)
+  isFeatured     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  appearances         Appearance[]
+  battles             Battle[]
+  productCollections  ProductCollection[] @relation("WorkCollections")
+  firstAppearanceOf   Monster[]           @relation("FirstAppearance")
+
+  @@index([slug])
+  @@index([workType])
+  @@index([releaseDate])
+}
+
+// ============================================================================
+// APPEARANCE (Monster <-> Work junction)
+// ============================================================================
+
+model Appearance {
+  id         String   @id @default(cuid())
+  monsterId  String
+  monster    Monster  @relation(fields: [monsterId], references: [id], onDelete: Cascade)
+  workId     String
+  work       Work     @relation(fields: [workId], references: [id], onDelete: Cascade)
+  roleTag    String   @default("featured") // protagonist, antagonist, cameo, featured, mentioned
+  notesShort String?  @default("")
+
+  createdAt  DateTime @default(now())
+
+  @@unique([monsterId, workId])
+  @@index([monsterId])
+  @@index([workId])
+}
+
+// ============================================================================
+// BATTLE SYSTEM
+// ============================================================================
+
+model Battle {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  workId       String?
+  work         Work?    @relation(fields: [workId], references: [id])
+  location     String?
+  summary      String?  @default("")
+  battleDate   DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  participants BattleParticipant[]
+
+  @@index([slug])
+  @@index([workId])
+}
+
+model BattleParticipant {
+  id         String   @id @default(cuid())
+  battleId   String
+  battle     Battle   @relation(fields: [battleId], references: [id], onDelete: Cascade)
+  monsterId  String
+  monster    Monster  @relation(fields: [monsterId], references: [id], onDelete: Cascade)
+  outcome    String   @default("unknown") // win, loss, draw, unknown
+  notesShort String?  @default("")
+
+  @@unique([battleId, monsterId])
+  @@index([battleId])
+  @@index([monsterId])
+}
+
+// ============================================================================
+// MONSTER RELATIONSHIPS
+// ============================================================================
+
+model Relationship {
+  id             String   @id @default(cuid())
+  fromMonsterId  String
+  fromMonster    Monster  @relation("RelationshipFrom", fields: [fromMonsterId], references: [id], onDelete: Cascade)
+  toMonsterId    String
+  toMonster      Monster  @relation("RelationshipTo", fields: [toMonsterId], references: [id], onDelete: Cascade)
+  relationType   String   // ally, enemy, rival, creator, createdBy, variant, other
+  notesShort     String?  @default("")
+
+  createdAt      DateTime @default(now())
+
+  @@unique([fromMonsterId, toMonsterId, relationType])
+  @@index([fromMonsterId])
+  @@index([toMonsterId])
+}
+
+// ============================================================================
+// PRODUCT & AFFILIATE ENTITIES
+// ============================================================================
+
+model Product {
+  id              String   @id @default(cuid())
+  asin            String   @unique
+  title           String
+  imageUrl        String?
+  price           String?  // Stored as string to preserve formatting
+  primeEligible   Boolean  @default(false)
+  category        String   @default("general") // figures, model_kits, posters, shirts, bluray, books, art
+  brand           String?
+  amazonUrlWithTag String?
+  searchKeywords  String   @default("[]") // JSON array
+
+  // Status tracking
+  isActive        Boolean  @default(true)
+  isSuggested     Boolean  @default(false) // For admin approval queue
+  lastFetchedAt   DateTime?
+  fetchFailCount  Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  collectionItems ProductCollectionItem[]
+  affiliateClicks AffiliateClick[]
+
+  @@index([asin])
+  @@index([category])
+  @@index([isActive])
+}
+
+model ProductCollection {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?  @default("")
+  scopeType   String   // monster, movie, era, category, featured
+
+  // Scope references (nullable based on scopeType)
+  monsterId   String?
+  monster     Monster? @relation("MonsterCollections", fields: [monsterId], references: [id])
+  workId      String?
+  work        Work?    @relation("WorkCollections", fields: [workId], references: [id])
+  scopeValue  String?  // For era or category scope types
+
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  items       ProductCollectionItem[]
+
+  @@index([slug])
+  @@index([scopeType])
+}
+
+model ProductCollectionItem {
+  id           String            @id @default(cuid())
+  collectionId String
+  collection   ProductCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  productId    String
+  product      Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  rank         Int               @default(0)
+  reasonLine   String?           @default("") // Why we recommend this product
+
+  createdAt    DateTime          @default(now())
+
+  @@unique([collectionId, productId])
+  @@index([collectionId])
+  @@index([productId])
+}
+
+// ============================================================================
+// CONTENT ENTITIES (Blog, Stories)
+// ============================================================================
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  postType    String   // article, story, guide, explainer
+  status      String   @default("draft") // draft, published, archived
+
+  // Story-specific fields
+  storyPerspective String? // human, godzilla, other_monster, battle_royale
+
+  // Content
+  excerpt     String?  @default("")
+  mdxPath     String?  // Path to MDX file for longform content
+
+  // Categorization
+  tags        String   @default("[]") // JSON array
+  categories  String   @default("[]") // JSON array
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  // Featured image
+  featuredImageUrl String?
+
+  // Publishing
+  publishedAt DateTime?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([slug])
+  @@index([postType])
+  @@index([status])
+  @@index([publishedAt])
+}
+
+// ============================================================================
+// ANALYTICS
+// ============================================================================
+
+model AffiliateClick {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  pagePath  String
+  clickedAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([clickedAt])
+}
+
+// ============================================================================
+// ADMIN & AUTH
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("admin") // admin, editor
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions      Session[]
+
+  @@index([email])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([sessionToken])
+  @@index([userId])
+}
+
+// ============================================================================
+// SCHEDULED JOBS TRACKING
+// ============================================================================
+
+model JobRun {
+  id          String   @id @default(cuid())
+  jobType     String   // product_refresh, content_draft, full_product_sync
+  status      String   @default("running") // running, completed, failed
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
+  resultData  String?  @default("{}") // JSON with stats
+  errorMessage String?
+
+  @@index([jobType])
+  @@index([status])
+  @@index([startedAt])
+}
+
+// ============================================================================
+// EMAIL SUBSCRIPTIONS
+// ============================================================================
+
+model EmailSubscriber {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  isConfirmed Boolean  @default(false)
+  subscribedAt DateTime @default(now())
+
+  @@index([email])
+}
