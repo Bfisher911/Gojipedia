@@ -166,12 +166,14 @@ function parseProduct(item: Record<string, unknown>): AmazonProduct | null {
     const detailPageUrl = item.DetailPageURL as string || `https://www.amazon.com/dp/${asin}`;
 
     let brand: string | null = null;
-    const byLineInfo = itemInfo?.ByLineInfo as Record<string, unknown>;
-    if (byLineInfo?.Brand?.DisplayValue) {
-      brand = (byLineInfo.Brand as Record<string, unknown>).DisplayValue as string;
-    } else if (byLineInfo?.Manufacturer?.DisplayValue) {
-      brand = (byLineInfo.Manufacturer as Record<string, unknown>).DisplayValue as string;
-    }
+const byLineInfo = itemInfo?.ByLineInfo as Record<string, unknown>;
+        const brand_ = (byLineInfo as Record<string, { DisplayValue?: string }>)?.Brand?.DisplayValue;
+        const brand_manufacturer = (byLineInfo as Record<string, { DisplayValue?: string }>)?.Manufacturer?.DisplayValue;
+        if (brand_) {
+                brand = brand_ as string;
+        } else if (brand_manufacturer) {
+                brand = brand_manufacturer as string;
+        }
 
     return {
       asin,
