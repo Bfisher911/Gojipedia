@@ -271,7 +271,7 @@ export default async function MonsterProfilePage({ params }: PageProps) {
                           {appearance.work?.title || 'Unknown'}
                         </p>
                         <p className="text-sm text-[#606070] capitalize">
-                          {appearance.roleTag} • {formatDate(appearance.work?.releaseDate, 'year')}
+                          {appearance.roleTag} • {formatDate(appearance.work?.releaseDate ?? null, 'year')}
                         </p>
                       </div>
                       {appearance.notesShort && (
