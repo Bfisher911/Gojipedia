@@ -234,8 +234,7 @@ export interface WorkWithRelations extends Work {
 
 export interface BattleWithParticipants extends Battle {
   participants: BattleParticipant[];
-  work?: Work | null;
-}
+  work?: Work | undefined;}
 
 // Fight record summary
 export interface FightRecord {
