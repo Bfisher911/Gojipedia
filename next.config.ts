@@ -24,16 +24,6 @@ const nextConfig: NextConfig = {
   // Transpile packages for compatibility
   transpilePackages: ['lucide-react'],
 
-  // Experimental features for better Netlify support
-  experimental: {
-    // Server actions are stable in Next.js 14+
-  },
-
-  // ESLint configuration - don't fail build on warnings
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-
   // TypeScript configuration - don't fail build on type errors during initial deploy
   typescript: {
     ignoreBuildErrors: true,
