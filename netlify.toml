@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  # The @netlify/plugin-nextjs handles the publish directory automatically
 
 # Use the Netlify Next.js plugin for full Next.js support
 [[plugins]]
@@ -15,13 +15,8 @@
   # Tell Next.js this is Netlify
   NETLIFY = "true"
 
-# Handle Next.js routing - let the plugin handle most routes
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/___netlify-handler"
-  status = 200
-  conditions = {Role = ["admin"]}
-  force = false
+# The @netlify/plugin-nextjs handles all Next.js routing automatically
+# No manual redirects needed
 
 # Headers for security and caching
 [[headers]]
