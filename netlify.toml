@@ -10,6 +10,10 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_FLAGS = "--legacy-peer-deps"
+  # Skip Prisma checksum verification (CDN sometimes returns 403)
+  PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING = "1"
+  # Tell Next.js this is Netlify
+  NETLIFY = "true"
 
 # Handle Next.js routing - let the plugin handle most routes
 [[redirects]]
