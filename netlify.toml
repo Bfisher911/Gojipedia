@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  # The @netlify/plugin-nextjs handles the publish directory automatically
+  publish = ".next"
 
 # Use the Netlify Next.js plugin for full Next.js support
 [[plugins]]
