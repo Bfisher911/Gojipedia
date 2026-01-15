@@ -16,6 +16,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'ws-na.amazon-adsystem.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
     ],
     // Use unoptimized images for Netlify compatibility if needed
     unoptimized: process.env.NETLIFY === 'true',
