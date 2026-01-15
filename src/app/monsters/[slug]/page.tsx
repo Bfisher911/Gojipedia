@@ -2,10 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, ExternalLink, Swords, Shield, Zap, Brain, Star, Clock } from 'lucide-react';
+import { Swords, Shield, Zap, Star } from 'lucide-react';
 import { getMonsterBySlug, getMonsterFightRecord, getRelatedMonsters, getProductsByMonster } from '@/lib/db';
 import { EraTags } from '@/components/ui/EraBadge';
-import { FanPowerIndex, StatBar } from '@/components/ui/FanPowerIndex';
+import { FanPowerIndex } from '@/components/ui/FanPowerIndex';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { MonsterCardCompact } from '@/components/monsters/MonsterCard';
 import { ProductCardHorizontal, AffiliateDisclosure } from '@/components/products/ProductCard';
 import { AdSlot } from '@/components/ui/AdSlot';
@@ -66,13 +67,13 @@ export default async function MonsterProfilePage({ params }: PageProps) {
       {/* Header */}
       <div className="bg-gradient-to-b from-[#1a1a25] to-[#0a0a0f] py-8">
         <div className="max-w-7xl mx-auto px-4">
-          <Link
-            href="/monsters"
-            className="inline-flex items-center gap-2 text-[#9090a0] hover:text-[#f0f0f5] transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Monster Directory
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: 'Monsters', href: '/monsters' },
+              { label: monster.name }
+            ]}
+            className="mb-6"
+          />
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Image */}

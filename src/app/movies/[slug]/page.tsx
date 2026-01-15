@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Clock, Calendar, Building, User } from 'lucide-react';
+import { Clock, Calendar, Building, User } from 'lucide-react';
 import { getWorkWithMonsters, getProducts } from '@/lib/db';
 import { EraTags } from '@/components/ui/EraBadge';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { MonsterCardCompact } from '@/components/monsters/MonsterCard';
 import { ProductCard, AffiliateDisclosure } from '@/components/products/ProductCard';
 import { AdSlot } from '@/components/ui/AdSlot';
@@ -56,13 +57,13 @@ export default async function MovieDetailPage({ params }: PageProps) {
       {/* Header */}
       <div className="bg-gradient-to-b from-[#1a1a25] to-[#0a0a0f] py-8">
         <div className="max-w-7xl mx-auto px-4">
-          <Link
-            href="/movies"
-            className="inline-flex items-center gap-2 text-[#9090a0] hover:text-[#f0f0f5] transition-colors mb-6"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Movies & Media
-          </Link>
+          <Breadcrumbs
+            items={[
+              { label: 'Movies', href: '/movies' },
+              { label: work.title }
+            ]}
+            className="mb-6"
+          />
 
           <div className="grid md:grid-cols-3 gap-8">
             {/* Poster */}

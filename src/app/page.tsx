@@ -64,6 +64,9 @@ export default async function HomePage() {
         <AdSlot variant="top" />
       </div>
 
+      {/* Section Divider */}
+      <div className="section-divider max-w-7xl mx-auto" />
+
       {/* Featured Monsters */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -98,6 +101,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <div className="section-divider max-w-7xl mx-auto" />
 
       {/* Latest Movies + Shop Section */}
       <section className="py-16 bg-[#12121a]/50">
@@ -149,6 +155,9 @@ export default async function HomePage() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <AdSlot variant="infeed" />
       </div>
+
+      {/* Section Divider */}
+      <div className="section-divider max-w-7xl mx-auto" />
 
       {/* Timeline Teaser */}
       <section className="py-16">
