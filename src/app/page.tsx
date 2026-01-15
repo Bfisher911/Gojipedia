@@ -19,30 +19,47 @@ export default async function HomePage() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#00d4aa]/10 via-transparent to-[#0a0a0f]" />
-        <div className="absolute inset-0 bg-[url('/images/hero-pattern.svg')] opacity-5" />
+        {/* Animated gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#00d4aa]/15 via-[#0a0a0f] to-[#0a0a0f]" />
+        <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/10 via-transparent to-transparent" />
+
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: 'linear-gradient(#00d4aa 1px, transparent 1px), linear-gradient(90deg, #00d4aa 1px, transparent 1px)',
+          backgroundSize: '50px 50px'
+        }} />
+
+        {/* Glow orbs */}
+        <div className="absolute top-20 right-1/4 w-96 h-96 bg-[#00d4aa]/20 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-4">
           <div className="max-w-3xl">
-            <h1 className="text-4xl md:text-6xl font-bold text-[#f0f0f5] leading-tight">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#00d4aa]/10 border border-[#00d4aa]/30 rounded-full mb-6">
+              <span className="w-2 h-2 bg-[#00d4aa] rounded-full animate-pulse" />
+              <span className="text-sm font-medium text-[#00d4aa]">The Ultimate Godzilla Encyclopedia</span>
+            </div>
+
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-[#f0f0f5] leading-[1.1] tracking-tight">
               The Encyclopedia of the{' '}
-              <span className="text-[#00d4aa]">King of Monsters</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#00d4aa] to-[#00f0c0]">King of Monsters</span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-[#9090a0] max-w-2xl">
+            <p className="mt-6 text-lg md:text-xl text-[#9090a0] max-w-2xl leading-relaxed">
               Explore seven decades of kaiju history. From Godzilla&apos;s first atomic breath in 1954
               to the titans of the MonsterVerse, discover monsters, movies, timelines, and lore.
             </p>
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href="/monsters"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#00d4aa] text-[#0a0a0f] rounded-lg font-semibold hover:bg-[#00f0c0] transition-colors"
+                className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-[#00d4aa] to-[#00f0c0] text-[#0a0a0f] rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-[#00d4aa]/30 transition-all hover:-translate-y-0.5"
               >
                 Explore Monsters
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 href="/timeline"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a1a25] text-[#f0f0f5] rounded-lg font-semibold border border-[#2a2a3a] hover:border-[#00d4aa]/50 transition-colors"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-[#12121a] text-[#f0f0f5] rounded-xl font-bold text-lg border border-[#2a2a3a] hover:border-[#00d4aa]/50 hover:bg-[#1a1a25] transition-all"
               >
                 View Timeline
               </Link>
@@ -50,7 +67,7 @@ export default async function HomePage() {
           </div>
 
           {/* Stats */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             <StatCard icon={<Swords className="w-5 h-5" />} value={stats.monsters} label="Monsters" />
             <StatCard icon={<Film className="w-5 h-5" />} value={stats.works} label="Movies & Media" />
             <StatCard icon={<Clock className="w-5 h-5" />} value="70+" label="Years of History" />
@@ -265,10 +282,16 @@ export default async function HomePage() {
 // Helper Components
 function StatCard({ icon, value, label }: { icon: React.ReactNode; value: number | string; label: string }) {
   return (
-    <div className="bg-[#12121a] border border-[#2a2a3a] rounded-xl p-4 md:p-6">
-      <div className="text-[#00d4aa] mb-2">{icon}</div>
-      <div className="text-2xl md:text-3xl font-bold text-[#f0f0f5]">{value}</div>
-      <div className="text-sm text-[#606070]">{label}</div>
+    <div className="group relative bg-[#0d0d12] border border-[#2a2a3a] rounded-xl p-5 md:p-6 overflow-hidden hover:border-[#00d4aa]/30 transition-all">
+      {/* Subtle glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00d4aa]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative">
+        <div className="w-10 h-10 rounded-lg bg-[#00d4aa]/10 flex items-center justify-center text-[#00d4aa] mb-3 group-hover:bg-[#00d4aa]/20 transition-colors">
+          {icon}
+        </div>
+        <div className="text-3xl md:text-4xl font-black text-[#f0f0f5]">{value}</div>
+        <div className="text-sm text-[#606070] mt-1">{label}</div>
+      </div>
     </div>
   );
 }
@@ -295,15 +318,19 @@ function ArticleCard({ article }: { article: { id: string; title: string; slug: 
   return (
     <Link
       href={`/lore/${article.slug}`}
-      className="group bg-[#12121a] border border-[#2a2a3a] rounded-xl p-6 hover:border-[#00d4aa]/50 transition-colors"
+      className="group relative bg-[#0d0d12] border border-[#2a2a3a] rounded-xl p-6 overflow-hidden hover:border-[#00d4aa]/50 hover:-translate-y-1 transition-all duration-300"
     >
-      <h3 className="text-lg font-semibold text-[#f0f0f5] group-hover:text-[#00d4aa] transition-colors line-clamp-2">
-        {article.title}
-      </h3>
-      <p className="mt-2 text-sm text-[#9090a0] line-clamp-3">{article.excerpt}</p>
-      <div className="mt-4 flex items-center gap-1 text-sm text-[#00d4aa]">
-        Read more
-        <ArrowRight className="w-3 h-3" />
+      {/* Gradient overlay on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#00d4aa]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="relative">
+        <h3 className="text-lg font-bold text-[#f0f0f5] group-hover:text-[#00d4aa] transition-colors line-clamp-2">
+          {article.title}
+        </h3>
+        <p className="mt-3 text-sm text-[#9090a0] line-clamp-3 leading-relaxed">{article.excerpt}</p>
+        <div className="mt-5 flex items-center gap-1.5 text-sm font-medium text-[#00d4aa]">
+          Read more
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </div>
       </div>
     </Link>
   );
